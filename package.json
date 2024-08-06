@@ -1,5 +1,5 @@
 {
-  "name": "terca-feira",
+  "name": "analise_lexica_scanner",
   "version": "1.0.0",
   "main": "atividade30-07.js",
   "scripts": {
@@ -8,5 +8,17 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "Analisador léxico que receba um código-fonte como entrada e gera como saída dois arquivo s que contém a tabela de tokens e a tabela de símbolos.",
+  "keywords": [
+    "analise",
+    "lexica",
+    "scanner",
+    "node",
+    "js",
+    "javascript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZOMBOTRON/Analise_Lexica_Scanner"
+  }
 }
