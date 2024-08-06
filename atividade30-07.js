@@ -9,10 +9,6 @@ const linguagem = {
   numeros: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
 };
 
-for (let i = 0; i < 1000; i++) {
-  linguagem.constantes.push(i.toString());
-}
-
 const codigo = `while i < 100 do i = i + j;`;
 
 const tokenizar = (codigo) => {
@@ -35,14 +31,15 @@ const tokenizar = (codigo) => {
 };
 
 const tokens = tokenizar(codigo);
+console.log('Tokens:', tokens);
 
 const identificador_token = (token) => {
   if (linguagem.palavras_reservadas.includes(token)) return 'Palavra reservada';
   if (linguagem.operadores.includes(token)) return 'Operador';
   if (linguagem.terminadores.includes(token)) return 'Terminador';
   if (linguagem.identificadores.includes(token)) return 'Identificador';
-  if (linguagem.constantes.includes(token)) return 'Constante';
-  if (!isNaN(token)) return 'Número';
+  if (linguagem.numeros.includes(token)) return 'Número';
+  if (!isNaN(token)) return 'Constante';
   return 'Erro: Token desconhecido';
 };
 
