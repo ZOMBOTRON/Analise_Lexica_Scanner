@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const linguagem = {
   palavras_reservadas: ['while', 'do'],
   operadores: ['<', '=', '+'],
@@ -7,13 +9,32 @@ const linguagem = {
   numeros: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
 };
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 1000; i++) {
   linguagem.constantes.push(i.toString());
 }
 
 const codigo = `while i < 100 do i = i + j;`;
 
-const tokens = codigo.split(' ');
+const tokenizar = (codigo) => {
+  const tokens = [];
+  let linha = 0;
+  let coluna = 0;
+
+  codigo.split(/(\s+|[<>=+;])/).forEach((token) => {
+    if (token.trim() !== '') {
+      tokens.push({ token, linha, coluna });
+    }
+    coluna += token.length;
+    if (token.includes('\n')) {
+      linha += 1;
+      coluna = 0;
+    }
+  });
+
+  return tokens;
+};
+
+const tokens = tokenizar(codigo);
 
 const identificador_token = (token) => {
   if (linguagem.palavras_reservadas.includes(token)) return 'Palavra reservada';
@@ -21,20 +42,53 @@ const identificador_token = (token) => {
   if (linguagem.terminadores.includes(token)) return 'Terminador';
   if (linguagem.identificadores.includes(token)) return 'Identificador';
   if (linguagem.constantes.includes(token)) return 'Constante';
-  if (linguagem.numeros.includes(token)) return 'Número';
-  return 'Desconhecido';
+  if (!isNaN(token)) return 'Número';
+  return 'Erro: Token desconhecido';
 };
 
-const identificacao = tokens.map((token) => identificador_token(token));
+const tabelaTokens = [];
+const tabelaSimbolos = new Map();
+let simboloIndex = 1;
 
-const tamanho_token = tokens.map((token) => token.length);
+tokens.forEach(({ token, linha, coluna }) => {
+  const tipo = identificador_token(token);
+  const tamanho = token.length;
+  tabelaTokens.push({ token, tipo, tamanho, linha, coluna });
 
-const posicionamento = tokens.map((token, index) => {
-  const posicao = codigo.indexOf(token);
-  return posicao === -1 ? 'Não encontrado' : posicao;
+  if (tipo === 'Identificador' || tipo === 'Constante') {
+    if (!tabelaSimbolos.has(token)) {
+      tabelaSimbolos.set(token, simboloIndex++);
+    }
+  }
 });
 
-console.log('Tokens:', tokens);
-console.log('Identificação:', identificacao);
-console.log('Tamanho:', tamanho_token);
-console.log('Posicionamento:', posicionamento);
+let outputTokens = `Código do programa fonte: ${codigo}\nTokens\ntoken\tidentificação\ttamanho\tposição (lin, col)\n`;
+tabelaTokens.forEach(({ token, tipo, tamanho, linha, coluna }) => {
+  const tipoDetalhado =
+    tipo === 'Identificador' || tipo === 'Constante'
+      ? `[${tipo.toLowerCase()}, ${tabelaSimbolos.get(token)}]`
+      : tipo.toLowerCase();
+  outputTokens += `${token}\t${tipoDetalhado}\t${tamanho}\t(${linha}, ${coluna})\n`;
+});
+fs.writeFileSync('tabela_tokens.txt', outputTokens, 'utf-8');
+
+let outputSimbolos = `Tabela de símbolos\níndice\tsímbolo\n`;
+tabelaSimbolos.forEach((index, simbolo) => {
+  outputSimbolos += `${index}\t${simbolo}\n`;
+});
+fs.writeFileSync('tabela_simbolos.txt', outputSimbolos, 'utf-8');
+
+console.log('Tabela de Tokens:');
+console.log(outputTokens);
+console.log('Tabela de Símbolos:');
+console.log(outputSimbolos);
+
+const erros = tabelaTokens.filter((t) => t.tipo.startsWith('Erro'));
+if (erros.length > 0) {
+  console.error('Erros encontrados:');
+  erros.forEach((erro) =>
+    console.error(
+      `Token: ${erro.token}, Posição: (${erro.linha}, ${erro.coluna}), Tipo: ${erro.tipo}`,
+    ),
+  );
+}
