@@ -59,7 +59,7 @@ tokens.forEach(({ token, linha, coluna }) => {
   }
 });
 
-let outputTokens = `Código do programa fonte: ${codigo}\nTokens\ntoken\tidentificação\ttamanho\tposição (lin, col)\n`;
+let outputTokens = `token\tidentificação\ttamanho\tposição (lin, col)\n`;
 tabelaTokens.forEach(({ token, tipo, tamanho, linha, coluna }) => {
   const tipoDetalhado =
     tipo === 'Identificador' || tipo === 'Constante'
@@ -67,13 +67,16 @@ tabelaTokens.forEach(({ token, tipo, tamanho, linha, coluna }) => {
       : tipo.toLowerCase();
   outputTokens += `${token}\t${tipoDetalhado}\t${tamanho}\t(${linha}, ${coluna})\n`;
 });
-fs.writeFileSync('tabela_tokens.txt', outputTokens, 'utf-8');
 
 let outputSimbolos = `Tabela de símbolos\níndice\tsímbolo\n`;
 tabelaSimbolos.forEach((index, simbolo) => {
   outputSimbolos += `${index}\t${simbolo}\n`;
 });
-fs.writeFileSync('tabela_simbolos.txt', outputSimbolos, 'utf-8');
+fs.writeFileSync(
+  'tabela.txt',
+  `${outputTokens}\n\n\n${outputSimbolos}`,
+  'utf-8',
+);
 
 console.log('Tabela de Tokens:');
 console.log(outputTokens);
